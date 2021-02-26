@@ -1,5 +1,8 @@
-// Use Keyboard to calculate
+/**
+ * Use Keyboard to calculate
+ */
 document.onkeydown = function() {type_to_screen(event); play_sound();};
+
 function type_to_screen(event) {
     let key_code = event.which || event.keyCode;
     let calc_screen = document.getElementById("calculator_screen");
@@ -19,15 +22,14 @@ function type_to_screen(event) {
             let current_str = calc_screen.innerHTML;
             let last_char = current_str.substr(current_str.length - 1, current_str.length);
 
-            let check_it = false;
+            let is_operator = false;
             for (i = 0; i < operator_list.length; i++) {
                 if (last_char == operator_list[i].txt) {
-                    check_it = true;
+                    is_operator = true;
                     i = operator_list.length;
                 }
             }
-
-            if (check_it == true) {
+            if (is_operator == true) {
                 current_str = current_str.substr(0, current_str.length - 1);
                 calc_screen.innerHTML = current_str + key.txt;
             } else {
@@ -42,7 +44,7 @@ function type_to_screen(event) {
         result_screen.innerHTML = 0;
     }
 
-    // for DEL Button (also for Backspace key)
+    // For DEL Button (also for Backspace key)
     if (key_code == 8 || key_code == 46) {
         let current_strg = calc_screen.innerHTML;
         calc_screen.innerHTML = current_strg.substr(0, current_strg.length - 1);
@@ -53,18 +55,21 @@ function type_to_screen(event) {
         }
     }
 
-    // for dot/comma key
+    // For dot/comma key
     if  (key_code == 190 || key_code == 110 || key_code == 188) {
         let current_strg = calculator_screen.innerHTML;
         print_dot(calculator_screen, ".");
     }
 
-    // for Enter (equal) key
+    // For Enter (equal) key
     if  (key_code == 13) {
-        berechnen(calc_screen, result_screen);
+        calculate(calc_screen, result_screen);
     }
 }
 
+/**
+ * Functions to print on the calculator screen
+ */
 function print_screen(calc_screen, code) {
     if (calc_screen.innerHTML == "") {   
         calc_screen.innerHTML = code;
@@ -72,7 +77,6 @@ function print_screen(calc_screen, code) {
         calc_screen.innerHTML += code;
     }
 }
-
 function print_operator(calc_screen, code) {
     if (calc_screen.innerHTML == "") {
         calc_screen.innerHTML = "0" + code;
@@ -81,51 +85,52 @@ function print_operator(calc_screen, code) {
     }
 }
 
-// fuer komma
+/**
+ * Handle floating point numbers "."
+ */
 function print_dot(calc_screen, code) { 
     let screen_str = calc_screen.innerHTML;
-    let check_it = screen_str.endsWith(".");  // screen 
-    if (check_it == false) {                    // screen does not end with point
-
-        let testEndsWithOp = false;                   // 
+    // String displayed on screen
+    let is_dot = screen_str.endsWith(".");
+    // Screen does not end with point
+    if (is_dot == false) {
+        let endsWithOperator = false;
         for (let i = 0; i < operator_list.length; i++) {
-            testEndsWithOp = screen_str.endsWith(operator_list[i].txt);
-
-            if (testEndsWithOp) {
+            endsWithOperator = screen_str.endsWith(operator_list[i].txt);
+            if (endsWithOperator) {
                 i = operator_list.length;
             }
         }
 
-        if (screen_str == "" || testEndsWithOp) {                     // then if it is empty
+        // If no string is displayed on the screen
+        if (screen_str == "" || endsWithOperator) {
             calc_screen.innerHTML += 0 + code;
-        } else {  
-          // double point
+        } else {
+          // Double points
             let last_dot_pos = screen_str.lastIndexOf(".");     
             let test_str = screen_str.substr(last_dot_pos + 1, screen_str.length - 1);
-            let testdot =  false;
-
+            let test_dot =  false;
             for (let i = 0; i < operator_list.length; i++) {
-                testdot= test_str.includes(operator_list[i].txt);   /// checks if element of operator list exist
-                if(testdot) {
+                // Checks if element of operator list appears in string
+                test_dot= test_str.includes(operator_list[i].txt);
+                if(test_dot) {
                     calc_screen.innerHTML += code;
                     i = operator_list.length;
-                }
-               
-                
+                }               
             }
-            if(!screen_str.includes(code)&&testdot == false) // no operator and dot  // screen_str ninmmt nur werte aus calc_screen  
+            // If there is no operator or dot
+            // screen_str only takes on values from the calc_screen
+            if(!screen_str.includes(code) && test_dot == false)  
             {
                 calc_screen.innerHTML += code;
-            }
-            
-                    
+            }    
         }
-
     }
-    
 }
 
-// Calculate it
+/** 
+ * Function to do calculation
+*/
 function calculate(calculator_screen, result_screen) {
     // Check if there is already a "(" of plus/minus button (Vorzeichen)
     let current_str = calculator_screen.innerHTML;
@@ -133,14 +138,13 @@ function calculate(calculator_screen, result_screen) {
         let bracket_open = current_str.lastIndexOf("(");
         let last_str = current_str.substr(bracket_open + 1, current_str.length);
         if (bracket_open >= 0) {
-            let check_bracket_close = last_str.includes(")");
-            if (!check_bracket_close) {
+            let is_bracket_close = last_str.includes(")");
+            if (!is_bracket_close) {
                 calculator_screen.innerHTML += ")";
             }
         }
 
-        // console.log("Truoc khi calculate: " + calculator_screen.innerHTML);
-
+        // Handle exponents and brackets
         let screen_txt = calculator_screen.innerHTML;
         let index_src = 0;
         do {
@@ -149,23 +153,18 @@ function calculate(calculator_screen, result_screen) {
                 let first_slice_str = screen_txt.slice(0, index_src);
                 let second_slice_str = screen_txt.slice(index_src, screen_txt.length);
                 
-                let erste_klammer_pos = second_slice_str.indexOf(")");
-                let first_part = second_slice_str.slice(0, erste_klammer_pos);
-                let second_part = second_slice_str.slice(erste_klammer_pos, second_slice_str.length);
+                let first_bracket_pos = second_slice_str.indexOf(")");
+                let first_part = second_slice_str.slice(0, first_bracket_pos);
+                let second_part = second_slice_str.slice(first_bracket_pos, second_slice_str.length);
                 second_slice_str = first_part + ", 2" + second_part;
 
                 screen_txt = first_slice_str + second_slice_str;
-
                 screen_txt = screen_txt.replace("sqr", "Math.pow");
             }
         } while (index_src != -1);
 
-        console.log("After Replacing: " + screen_txt);
-
         // Calculate it when screen is written correctly
         result_screen.innerHTML = eval(screen_txt);
-        // console.log("Scau khi calculate: " + calculator_screen.innerHTML);
         calculator_screen.innerHTML = '';
-        // console.log("Sau khi leeren: " + calculator_screen.innerHTML);
     }
 }
