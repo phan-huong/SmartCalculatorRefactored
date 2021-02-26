@@ -1,6 +1,8 @@
 let calc = document.getElementById("calculator");
 
-// Define the calculator buttons
+/**
+ * Define the calculator buttons
+ */
 let displayed_keys = ["7", "8", "9", "4", "5", "6", "1", "2", "3", "0", ".", "*", "/", "+", "-"];
 
 let number_list = [{code: 48, txt: 0}, {code: 96, txt: 0}, 
@@ -20,13 +22,19 @@ let operator_list = [
             {code: 109, txt: '-'},
             {code: 111, txt: '/'}];
 
-// Setup calculator
+/**
+ * Setup calculator
+ * Calculator's screen is made up of a big screen,
+ * a calculator screen where the input operations are shown
+ * and the result screen.
+ */
 
-// Create calculator screen
+// Create big screen
 let big_screen = document.createElement("div");
 big_screen.setAttribute("id", "big_screen");
 calc.appendChild(big_screen);
 
+// Create calculator screen
 let calculator_screen = document.createElement("div");
 calculator_screen.setAttribute("id", "calculator_screen");
 big_screen.appendChild(calculator_screen);
@@ -37,6 +45,10 @@ let result_screen = document.createElement("div");
 result_screen.setAttribute("id", "result_screen");
 big_screen.appendChild(result_screen);
 result_screen.innerHTML = 0;
+
+/**
+ * Create left button area
+ */
 
 // Create inner left part (0-9 buttons & comma & ^2 buttons) & container
 let left_part = document.createElement("div");
@@ -50,91 +62,95 @@ left_part.appendChild(left_part_container);
 
 // Keys of left part
 let left_part_numbers = ["7", "8", "9", "4", "5", "6", "1", "2", "3", "0"];
-let left_part_special = [{code: '.', txt: '.'}, {code: '-', txt: '&plusmn;'}];
-for (taste of left_part_numbers) {
-    let num_btn = document.createElement("button");
-    num_btn.setAttribute("class","btn");
-    left_part_container.appendChild(num_btn);
-    num_btn.innerHTML = taste;
-    num_btn.onclick = function () {
-        print_it(calculator_screen, num_btn.innerHTML);
+let left_part_signs = [{code: '.', txt: '.'}, {code: '-', txt: '&plusmn;'}];
+for (left_part_number of left_part_numbers) {
+    let number_button = document.createElement("button");
+    number_button.setAttribute("class","btn");
+    left_part_container.appendChild(number_button);
+    number_button.innerHTML = left_part_number;
+    number_button.onclick = function () {
+        print_screen(calculator_screen, number_button.innerHTML);
     };
 }
 
 // For dot/comma and plus/minus sign buttons
-for (taste of left_part_special) {
-    let num_btn = document.createElement("button");
-    num_btn.setAttribute("class","btn");
-    left_part_container.appendChild(num_btn);
-    num_btn.innerHTML = taste.txt;
-    let num_txt = taste.code;
+for (left_part_sign of left_part_signs) {
+    let number_button = document.createElement("button");
+    number_button.setAttribute("class","btn");
+    left_part_container.appendChild(number_button);
+    number_button.innerHTML = left_part_sign.txt;
+    let num_txt = left_part_sign.code;
     
     // For dot/comma button
-    if (num_btn.innerHTML == ".") {
-        num_btn.onclick = function() {
+    if (number_button.innerHTML == ".") {
+        number_button.onclick = function() {
             let current_strg = calculator_screen.innerHTML;
             print_dot(calculator_screen, num_txt);
         }
     }
 
     // For plus/minus sign button (Vorzeichen)
-    if (num_btn.innerHTML == "&plusmn;" || num_btn.innerHTML == "±") {
-        num_btn.onclick = function() {
+    if (number_button.innerHTML == "&plusmn;" || number_button.innerHTML == "±") {
+        number_button.onclick = function() {
             calculator_screen.innerHTML += "(-";
         }
     }
-
 }
 
+/**
+ * Create right button area
+ */
 
-// create inner right part (operation buttons)  & container
+// Create inner right part (operation buttons)  & container
 let right_part = document.createElement("div");
 right_part.setAttribute("id","right_part");
 calc.appendChild(right_part);
 
-// right part container
+// Right part container
 let right_part_container = document.createElement("div");
 right_part_container.setAttribute("id","right_part_container");
 right_part.appendChild(right_part_container);
 
 // Keys of right part
-let right_part_special = ["DEL", "AC"];
+let right_part_specials = ["DEL", "AC"];
 let right_part_values = ["*", "/", "+", "-"];
 let special_values = ["^2", "="];
 
 // For "DEL" and "AC" Buttons
-for (taste of right_part_special) {
-    let num_btn = document.createElement("button");
-    num_btn.setAttribute("class","btn");
-    right_part_container.appendChild(num_btn);
-    num_btn.innerHTML = taste;
+for (right_part_special of right_part_specials) {
+    let number_button = document.createElement("button");
+    number_button.setAttribute("class","btn");
+    right_part_container.appendChild(number_button);
+    number_button.innerHTML = right_part_special;
     
-    if (num_btn.innerHTML == "DEL") {
-        num_btn.onclick = function() {
-            let current_strg = calculator_screen.innerHTML;
-            calculator_screen.innerHTML = current_strg.substr(0, current_strg.length - 1);
+    if (number_button.innerHTML == "DEL") {
+        number_button.onclick = function() {
+            let current_string = calculator_screen.innerHTML;
+            calculator_screen.innerHTML = current_string.substr(0, current_string.length - 1);
         }
     }
 
-    if (num_btn.innerHTML == "AC") {
-        num_btn.onclick = function() {
+    if (number_button.innerHTML == "AC") {
+        number_button.onclick = function() {
             calculator_screen.innerHTML = '';
             result_screen.innerHTML = '0';
         }
     }
 }
 
-
-// For Operators buttons
-for (taste of right_part_values) {
-    let num_btn = document.createElement("button");
-    num_btn.setAttribute("class","btn");
-    right_part_container.appendChild(num_btn);
-    num_btn.innerHTML = taste;
-    num_btn.onclick = function () {
+/**
+ * Create operator buttons
+ */
+for (right_part_value of right_part_values) {
+    let number_button = document.createElement("button");
+    number_button.setAttribute("class","btn");
+    right_part_container.appendChild(number_button);
+    number_button.innerHTML = right_part_value;
+    number_button.onclick = function () {
         // Check if there is already a "(" of plus/minus button (Vorzeichen), then close it with ")"
         let current_str = calculator_screen.innerHTML;
         let bracket_open = current_str.lastIndexOf("(");
+        // Get the string inside the brackets
         let last_str = current_str.substr(bracket_open + 1, current_str.length);
         if (bracket_open >= 0) {
             let check_bracket_close = last_str.includes(")");
@@ -143,65 +159,63 @@ for (taste of right_part_values) {
             }
         }
         
-
-        // Handle the operator (replace operator if the last character on screen is also a operator) - prevent double operator
+        // Handle the operator - replace operator if the last character on screen is also a operator
+        // Prevent double operator
         let last_char = current_str.substr(current_str.length - 1, current_str.length);
-
-        let check_it = false;
+        let is_operator = false;
         for (i = 0; i < operator_list.length; i++) {
             if (last_char == operator_list[i].txt) {
-                check_it = true;
+                is_operator = true;
                 i = operator_list.length;
             }
         }
-
-        if (check_it == true) {
+        if (is_operator == true) {
             current_str = current_str.substr(0, current_str.length - 1);
             calculator_screen.innerHTML = current_str + this.innerHTML;
         } else {
-            print_it(calculator_screen, this.innerHTML);
+            print_screen(calculator_screen, this.innerHTML);
         }
     };
 }
 
+/**
+ * Create equal button "=" and exponent button "^2"
+ */
+for (special_value of special_values) {
+    let number_button = document.createElement("button");
+    number_button.setAttribute("class","btn");
+    right_part_container.appendChild(number_button);
+    number_button.innerHTML = special_value;
 
-// For equal button (gleich) and exponent button (hoch 2)
-for (taste of special_values) {
-    let num_btn = document.createElement("button");
-    num_btn.setAttribute("class","btn");
-    right_part_container.appendChild(num_btn);
-    num_btn.innerHTML = taste;
-
-    // For equal button (gleich) button 
-    if (num_btn.innerHTML == "=") { 
-        num_btn.onclick = function() {
-            berechnen(calculator_screen, result_screen);
+    // For equal button button 
+    if (number_button.innerHTML == "=") { 
+        number_button.onclick = function() {
+            calculate(calculator_screen, result_screen);
         }
     }
 
-    // For exponent button (hoch 2) button
-    if (num_btn.innerHTML == "^2"){
-        num_btn.onclick = function() {
+    // For exponent 2 button
+    if (number_button.innerHTML == "^2"){
+        number_button.onclick = function() {
             let current_str = calculator_screen.innerHTML;
             let endChar = current_str.charAt(current_str.length-1);
 
             // If last character is not an operator
-            let test_operator = false;
+            let is_operator = false;
             for (let index = 0; index < operator_list.length; index++) {
                 if (endChar == operator_list[index].txt) {
-                    test_operator = true;
+                    is_operator = true;
                     index = operator_list.length;
                 }
             }
 
             // If the screen does not just contain "sqr("
-            if (!test_operator) {
+            if (!is_operator) {
                 let pos = -1;
                 for (let i = current_str.length - 1; i >= 0; i--) {
-                    let test_new = false;
-                    for (op of operator_list) {
+                    for (operator of operator_list) {
                         // If the last found operator does not belong to a plus/minus sign (Vorzeichen)
-                        if (op.txt == current_str[i] && current_str[i-1] != "(") {
+                        if (operator.txt == current_str[i] && current_str[i-1] != "(") {
                             pos = i;
                             i = -1;
                         }
@@ -215,12 +229,9 @@ for (taste of special_values) {
                     } else if (current_slice.startsWith("sqr")) {
                         current_slice = current_slice.slice(4, current_slice.length);
                     }
-
                     let new_str = current_str[pos] + "sqr(" + current_slice;
-
-                    let corrected_scr = current_str.slice(0, pos) + new_str;
-
-                    calculator_screen.innerHTML = corrected_scr;
+                    let corrected_screen = current_str.slice(0, pos) + new_str;
+                    calculator_screen.innerHTML = corrected_screen;
                 } else {
                     calculator_screen.innerHTML = "sqr(" + current_str;
                 }
@@ -229,6 +240,9 @@ for (taste of special_values) {
     }
 }
 
+/**
+ * Play sound with every button pressed
+ */
 let all_buttons = document.querySelectorAll(".btn");
 for (btn of all_buttons) {
     btn.addEventListener("click", play_sound);

@@ -8,7 +8,7 @@ function type_to_screen(event) {
     // Print out all the numbers from 0 - 9
     for (key of number_list) {
         if (key_code == key.code) {
-            print_it(calc_screen, key.txt);
+            print_screen(calc_screen, key.txt);
         }
     }
 
@@ -31,7 +31,7 @@ function type_to_screen(event) {
                 current_str = current_str.substr(0, current_str.length - 1);
                 calc_screen.innerHTML = current_str + key.txt;
             } else {
-                print_it(calc_screen, key.txt);
+                print_screen(calc_screen, key.txt);
             }
         }
     }
@@ -65,7 +65,7 @@ function type_to_screen(event) {
     }
 }
 
-function print_it(calc_screen, code) {
+function print_screen(calc_screen, code) {
     if (calc_screen.innerHTML == "") {   
         calc_screen.innerHTML = code;
     } else {
@@ -126,7 +126,7 @@ function print_dot(calc_screen, code) {
 }
 
 // Calculate it
-function berechnen(calculator_screen, result_screen) {
+function calculate(calculator_screen, result_screen) {
     // Check if there is already a "(" of plus/minus button (Vorzeichen)
     let current_str = calculator_screen.innerHTML;
     if (current_str != "") {
@@ -139,7 +139,7 @@ function berechnen(calculator_screen, result_screen) {
             }
         }
 
-        // console.log("Truoc khi berechnen: " + calculator_screen.innerHTML);
+        // console.log("Truoc khi calculate: " + calculator_screen.innerHTML);
 
         let screen_txt = calculator_screen.innerHTML;
         let index_src = 0;
@@ -164,7 +164,7 @@ function berechnen(calculator_screen, result_screen) {
 
         // Calculate it when screen is written correctly
         result_screen.innerHTML = eval(screen_txt);
-        // console.log("Scau khi berechnen: " + calculator_screen.innerHTML);
+        // console.log("Scau khi calculate: " + calculator_screen.innerHTML);
         calculator_screen.innerHTML = '';
         // console.log("Sau khi leeren: " + calculator_screen.innerHTML);
     }
